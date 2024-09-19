@@ -294,7 +294,6 @@
             ButtonAns.TabIndex = 24;
             ButtonAns.Text = "Ans";
             ButtonAns.UseVisualStyleBackColor = true;
-            ButtonAns.Click += ButtonAns_Click;
             // 
             // ButtonDot
             // 
@@ -380,4 +379,7 @@
         private Button ButtonDot;
         private Button Num0;
     }
+
+
+
 }

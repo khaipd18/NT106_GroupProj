@@ -269,15 +269,7 @@
             }
         }
 
-        private void ButtonAns_Click(object sender, EventArgs e)
-        {
-
-
-
-
-
-
-        }
+        
 
     }
 }
