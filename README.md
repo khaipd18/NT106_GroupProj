@@ -1,2 +1,5 @@
 # NT106_GroupProj
-Đây là nơi lưu trữ bài tập &amp; đồ án nhóm môn học NT106 - Lập trình mạng căn bản.
+Danh sách thành viên:
+	23520007 - Lê Chánh Ân
+	23520034 - Vũ Duy An
+	23520678 - Phan Đình Khải
