@@ -1,6 +1,6 @@
 ﻿namespace Windows_Explorer
 {
-    partial class Form1
+    partial class WindowsExplorer
     {
         /// <summary>
         ///  Required designer variable.
@@ -35,6 +35,7 @@
             textBox1 = new TextBox();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             listView1 = new ListView();
+            backgroundWorker2 = new System.ComponentModel.BackgroundWorker();
             SuspendLayout();
             // 
             // button1
@@ -46,6 +47,7 @@
             button1.TabIndex = 0;
             button1.Text = "<<";
             button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
             // 
             // button2
             // 
@@ -56,6 +58,7 @@
             button2.TabIndex = 1;
             button2.Text = ">>";
             button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // button3
             // 
@@ -66,6 +69,7 @@
             button3.TabIndex = 2;
             button3.Text = "Open...";
             button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
             // 
             // label1
             // 
@@ -82,6 +86,7 @@
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(526, 27);
             textBox1.TabIndex = 4;
+            textBox1.TextChanged += textBox1_TextChanged;
             // 
             // listView1
             // 
@@ -93,7 +98,7 @@
             listView1.View = View.Details;
             listView1.SelectedIndexChanged += listView1_SelectedIndexChanged;
             // 
-            // Form1
+            // WindowsExplorer
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -104,8 +109,8 @@
             Controls.Add(button3);
             Controls.Add(button2);
             Controls.Add(button1);
-            Name = "Form1";
-            Text = "Form1";
+            Name = "WindowsExplorer";
+            Text = "Windows Explorer";
             ResumeLayout(false);
             PerformLayout();
         }
@@ -119,5 +124,6 @@
         private TextBox textBox1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private ListView listView1;
+        private System.ComponentModel.BackgroundWorker backgroundWorker2;
     }
 }
