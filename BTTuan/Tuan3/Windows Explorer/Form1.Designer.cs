@@ -1,6 +1,6 @@
 ﻿namespace Windows_Explorer
 {
-    partial class Form1
+    partial class WindowExplorer
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,44 +28,44 @@
         /// </summary>
         private void InitializeComponent()
         {
-            button1 = new Button();
-            button2 = new Button();
-            button3 = new Button();
+            BwBtn = new Button();
+            FwBtn = new Button();
+            OpenBtn = new Button();
             label1 = new Label();
-            textBox1 = new TextBox();
+            PathtxtBox = new TextBox();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            listView1 = new ListView();
+            listView = new ListView();
             SuspendLayout();
             // 
-            // button1
+            // BwBtn
             // 
-            button1.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            button1.Location = new Point(9, 12);
-            button1.Name = "button1";
-            button1.Size = new Size(50, 29);
-            button1.TabIndex = 0;
-            button1.Text = "<<";
-            button1.UseVisualStyleBackColor = true;
+            BwBtn.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            BwBtn.Location = new Point(9, 12);
+            BwBtn.Name = "BwBtn";
+            BwBtn.Size = new Size(50, 29);
+            BwBtn.TabIndex = 0;
+            BwBtn.Text = "<<";
+            BwBtn.UseVisualStyleBackColor = true;
             // 
-            // button2
+            // FwBtn
             // 
-            button2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            button2.Location = new Point(65, 12);
-            button2.Name = "button2";
-            button2.Size = new Size(50, 29);
-            button2.TabIndex = 1;
-            button2.Text = ">>";
-            button2.UseVisualStyleBackColor = true;
+            FwBtn.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            FwBtn.Location = new Point(65, 12);
+            FwBtn.Name = "FwBtn";
+            FwBtn.Size = new Size(50, 29);
+            FwBtn.TabIndex = 1;
+            FwBtn.Text = ">>";
+            FwBtn.UseVisualStyleBackColor = true;
             // 
-            // button3
+            // OpenBtn
             // 
-            button3.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            button3.Location = new Point(694, 12);
-            button3.Name = "button3";
-            button3.Size = new Size(94, 29);
-            button3.TabIndex = 2;
-            button3.Text = "Open...";
-            button3.UseVisualStyleBackColor = true;
+            OpenBtn.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            OpenBtn.Location = new Point(694, 12);
+            OpenBtn.Name = "OpenBtn";
+            OpenBtn.Size = new Size(94, 29);
+            OpenBtn.TabIndex = 2;
+            OpenBtn.Text = "Open...";
+            OpenBtn.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -76,48 +76,49 @@
             label1.TabIndex = 3;
             label1.Text = "Path :";
             // 
-            // textBox1
+            // PathtxtBox
             // 
-            textBox1.Location = new Point(162, 12);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(526, 27);
-            textBox1.TabIndex = 4;
+            PathtxtBox.Location = new Point(162, 12);
+            PathtxtBox.Name = "PathtxtBox";
+            PathtxtBox.Size = new Size(526, 27);
+            PathtxtBox.TabIndex = 4;
             // 
-            // listView1
+            // listView
             // 
-            listView1.Location = new Point(11, 55);
-            listView1.Name = "listView1";
-            listView1.Size = new Size(781, 343);
-            listView1.TabIndex = 5;
-            listView1.UseCompatibleStateImageBehavior = false;
-            listView1.View = View.Details;
-            listView1.SelectedIndexChanged += listView1_SelectedIndexChanged;
+            listView.Location = new Point(11, 55);
+            listView.Name = "listView";
+            listView.Size = new Size(781, 343);
+            listView.TabIndex = 5;
+            listView.UseCompatibleStateImageBehavior = false;
+            listView.View = View.Details;
+            listView.SelectedIndexChanged += listView1_SelectedIndexChanged;
             // 
-            // Form1
+            // WindowExplorer
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
-            Controls.Add(listView1);
-            Controls.Add(textBox1);
+            Controls.Add(listView);
+            Controls.Add(PathtxtBox);
             Controls.Add(label1);
-            Controls.Add(button3);
-            Controls.Add(button2);
-            Controls.Add(button1);
-            Name = "Form1";
-            Text = "Form1";
+            Controls.Add(OpenBtn);
+            Controls.Add(FwBtn);
+            Controls.Add(BwBtn);
+            Name = "WindowExplorer";
+            Text = "Window Explorer";
+            Load += WindowExplorer_Load;
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private Button button1;
-        private Button button2;
-        private Button button3;
+        private Button BwBtn;
+        private Button FwBtn;
+        private Button OpenBtn;
         private Label label1;
-        private TextBox textBox1;
+        private TextBox PathtxtBox;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
-        private ListView listView1;
+        private ListView listView;
     }
 }
