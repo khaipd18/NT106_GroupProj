@@ -1,7 +1,6 @@
 ﻿namespace Windows_Explorer
 {
     partial class WindowExplorer
-
     {
         /// <summary>
         ///  Required designer variable.
@@ -35,8 +34,8 @@
             label1 = new Label();
             PathtxtBox = new TextBox();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-
             listView = new ListView();
+            contextMenuStrip1 = new ContextMenuStrip();
 
             SuspendLayout();
             // 
@@ -53,7 +52,6 @@
             // 
             // FwBtn
             // 
-
             FwBtn.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             FwBtn.Location = new Point(65, 12);
             FwBtn.Name = "FwBtn";
@@ -61,6 +59,8 @@
             FwBtn.TabIndex = 1;
             FwBtn.Text = ">>";
             FwBtn.UseVisualStyleBackColor = true;
+
+            // 
             // OpenBtn
             // 
             OpenBtn.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
@@ -70,6 +70,7 @@
             OpenBtn.TabIndex = 2;
             OpenBtn.Text = "Open...";
             OpenBtn.UseVisualStyleBackColor = true;
+            OpenBtn.Click += OpenBtn_Click;
 
             // 
             // label1
@@ -83,7 +84,6 @@
             // 
             // PathtxtBox
             // 
-
             PathtxtBox.Location = new Point(162, 12);
             PathtxtBox.Name = "PathtxtBox";
             PathtxtBox.Size = new Size(526, 27);
@@ -99,8 +99,19 @@
             listView.UseCompatibleStateImageBehavior = false;
             listView.View = View.Details;
             listView.SelectedIndexChanged += listView1_SelectedIndexChanged;
-            // 
 
+            // 
+            // Context Menu
+            // 
+            contextMenuStrip1.Items.Add("Copy", null, CopyToolStripMenuItem_Click);
+            contextMenuStrip1.Items.Add("Cut", null, CutToolStripMenuItem_Click);
+            contextMenuStrip1.Items.Add("Paste", null, PasteToolStripMenuItem_Click);
+            contextMenuStrip1.Items.Add("Delete", null, DeleteToolStripMenuItem_Click);
+            contextMenuStrip1.Items.Add("New Folder", null, NewFolderToolStripMenuItem_Click);
+            listView.ContextMenuStrip = contextMenuStrip1; // Assign context menu to ListView
+
+            // 
+            // WindowExplorer
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -108,7 +119,6 @@
             Controls.Add(listView);
             Controls.Add(PathtxtBox);
             Controls.Add(label1);
-
             Controls.Add(OpenBtn);
             Controls.Add(FwBtn);
             Controls.Add(BwBtn);
@@ -128,7 +138,7 @@
         private Label label1;
         private TextBox PathtxtBox;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
-      private ListView listView;
-
+        private ListView listView;
+        private ContextMenuStrip contextMenuStrip1;
     }
 }
