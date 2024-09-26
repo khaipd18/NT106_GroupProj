@@ -155,19 +155,57 @@ namespace Windows_Explorer
 
         private async void PasteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (copiedFilePath != null && PathtxtBox.Text != string.Empty)
+            if (copiedFilePath != null && Directory.Exists(PathtxtBox.Text))
             {
-                string destPath = Path.Combine(PathtxtBox.Text, Path.GetFileName(copiedFilePath));
-                if (isCut)
+                try
                 {
-                    File.Move(copiedFilePath, destPath);
-                    isCut = false;
+                    // Check if the copied path is a file or a directory
+                    bool isFile = File.Exists(copiedFilePath);
+                    bool isDirectory = Directory.Exists(copiedFilePath);
+
+                    string destPath = Path.Combine(PathtxtBox.Text, Path.GetFileName(copiedFilePath));
+
+                    if (isFile)
+                    {
+                        if (isCut)
+                        {
+                            // Move the file
+                            File.Move(copiedFilePath, destPath);
+                        }
+                        else
+                        {
+                            // Copy the file asynchronously
+                            await CopyFileAsync(copiedFilePath, destPath);
+                        }
+                    }
+                    else if (isDirectory)
+                    {
+                        if (isCut)
+                        {
+                            // Move the directory
+                            Directory.Move(copiedFilePath, destPath);
+                        }
+                        else
+                        {
+                            // Copy the directory and its contents (Recursive method needed for large directories)
+                            CopyDirectory(copiedFilePath, destPath);
+                        }
+                    }
+
+                    isCut = false; // Reset cut flag
+                    copiedFilePath = null; // Clear the clipboard
+
+                    // Refresh file list
+                    LoadFiles(PathtxtBox.Text);
                 }
-                else
+                catch (Exception ex)
                 {
-                    await CopyFileAsync(copiedFilePath, destPath);
+                    MessageBox.Show($"Failed to paste the file or folder: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                LoadFiles(PathtxtBox.Text); // Làm mới danh sách tệp
+            }
+            else
+            {
+                MessageBox.Show("Invalid destination path or no file selected for copy/paste.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -197,6 +235,25 @@ namespace Windows_Explorer
                 string newFolderPath = Path.Combine(PathtxtBox.Text, "New Folder");
                 Directory.CreateDirectory(newFolderPath);
                 LoadFiles(PathtxtBox.Text); // Làm mới danh sách tệp
+            }
+        }
+        private void CopyDirectory(string sourceDir, string destDir)
+        {
+            // Create all subdirectories
+            Directory.CreateDirectory(destDir);
+
+            // Copy each file into the new directory
+            foreach (string filePath in Directory.GetFiles(sourceDir))
+            {
+                string destFile = Path.Combine(destDir, Path.GetFileName(filePath));
+                File.Copy(filePath, destFile);
+            }
+
+            // Copy each subdirectory using recursion
+            foreach (string directoryPath in Directory.GetDirectories(sourceDir))
+            {
+                string destSubDir = Path.Combine(destDir, Path.GetFileName(directoryPath));
+                CopyDirectory(directoryPath, destSubDir);
             }
         }
     }
