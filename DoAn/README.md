@@ -3,4 +3,4 @@
 		- Kết nối 2 người chơi thông qua mạng (LAN/WAN).
 		- Tính năng chat trong game.
 		- ...
-https://github.com/khaipd18/DoAn_NT106.git
+Link Github Đồ án: https://github.com/khaipd18/DoAn_NT106.git
