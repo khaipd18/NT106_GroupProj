@@ -1,179 +1,129 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Sockets;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Text.Json;
 
 namespace PrivateChatAndFilesharing
 {
     public partial class Client : Form
     {
+        private TcpClient client;
+        private NetworkStream stream;
+
         public Client()
         {
             InitializeComponent();
-            CheckForIllegalCrossThreadCalls = false;
-            Connect();
         }
 
         private void Client_Load(object sender, EventArgs e)
         {
+            ConnectToServer();
         }
 
-        private void btnSend_Click(object sender, EventArgs e)
+        private void ConnectToServer()
         {
-            SendMessage();
-            AddMessage(txbMessage.Text);
-        }
-
-        private void btnSendFile_Click(object sender, EventArgs e)
-        {
-            SendFile();
-        }
-
-        IPEndPoint IP;
-        Socket client;
-
-        // Khởi tạo kết nối
-        void Connect()
-        {
-            IP = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9999);
-            client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-
             try
             {
-                client.Connect(IP);
+                client = new TcpClient("127.0.0.1", 5000);
+                stream = client.GetStream();
+                AddMessage("Đã kết nối đến máy chủ...");
+                Thread listenThread = new Thread(ListenForMessages);
+                listenThread.IsBackground = true; // Đảm bảo thread này dừng khi form đóng
+                listenThread.Start();
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show("Không thể kết nối đến Server", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                AddMessage($"Lỗi kết nối: {ex.Message}");
             }
-
-            Thread listen = new Thread(Receive);
-            listen.IsBackground = true;
-            listen.Start();
         }
 
-        // Đóng kết nối
-        void Close()
+        private void ListenForMessages()
         {
-            client.Close();
-        }
+            byte[] buffer = new byte[1024];
+            int bytesRead;
 
-        // Gửi tin đi
-        void SendMessage()
-        {
-            if (txbMessage.Text != string.Empty)
-                client.Send(Serialize(txbMessage.Text));
-        }
-
-        // Gửi tệp
-        void SendFile()
-        {
-            using (OpenFileDialog ofd = new OpenFileDialog())
+            while (true)
             {
-                if (ofd.ShowDialog() == DialogResult.OK)
+                try
                 {
-                    string filePath = ofd.FileName;
-                    byte[] fileData = File.ReadAllBytes(filePath);
-                    string fileName = Path.GetFileName(filePath);
+                    bytesRead = stream.Read(buffer, 0, buffer.Length);
+                    if (bytesRead == 0) break; // Ngắt nếu không còn dữ liệu
 
-                    // Gửi tên tệp trước
-                    client.Send(Serialize(fileName));
-
-                    // Gửi dữ liệu tệp
-                    client.Send(fileData);
-                    AddMessage($"Đã gửi tệp: {fileName}");
+                    string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    AddMessage("Máy chủ: " + message);
+                }
+                catch (Exception ex)
+                {
+                    AddMessage($"Lỗi nhận tin nhắn: {ex.Message}");
+                    break; // Thoát khi có lỗi
                 }
             }
         }
 
-        // Thêm message vào khung chat
-        void AddMessage(string s)
+        private void AddMessage(string message)
         {
-            LsvMessage.Items.Add(new ListViewItem() { Text = s });
+            if (InvokeRequired)
+            {
+                Invoke(new Action<string>(AddMessage), message);
+                return;
+            }
+            LsvMessage.Items.Add(new ListViewItem(message));
+        }
+
+        private async void btnSend_Click(object sender, EventArgs e)
+        {
+            await SendMessageAsync();
+        }
+
+        private async Task SendMessageAsync()
+        {
+            string message = txbMessage.Text;
+            byte[] messageData = Encoding.UTF8.GetBytes(message);
+            await stream.WriteAsync(messageData, 0, messageData.Length);
+            AddMessage("Bạn: " + message);
             txbMessage.Clear();
         }
 
-        // Nhận tin
-        void Receive()
+        private async void btnShareFile_Click(object sender, EventArgs e)
         {
-            try
-            {
-                while (true)
-                {
-                    byte[] data = new byte[1024 * 5000];
-                    client.Receive(data);
+            await ShareFileAsync();
+        }
 
-                    // Kiểm tra xem dữ liệu nhận có phải là tên tệp không
-                    string message = (string)Deserialize(data);
-                    if (IsFileName(message))
-                    {
-                        ReceiveFile(message);
-                    }
-                    else
-                    {
-                        AddMessage(message);
-                    }
+        private async Task ShareFileAsync()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = openFileDialog.FileName;
+                byte[] fileData = await File.ReadAllBytesAsync(filePath);
+                string fileName = Path.GetFileName(filePath);
+                byte[] fileNameBytes = Encoding.UTF8.GetBytes(fileName);
+                byte[] fileNameLength = BitConverter.GetBytes(fileNameBytes.Length);
+
+                try
+                {
+                    // Gửi độ dài tên file
+                    await stream.WriteAsync(fileNameLength, 0, fileNameLength.Length);
+                    // Gửi tên file
+                    await stream.WriteAsync(fileNameBytes, 0, fileNameBytes.Length);
+                    // Gửi nội dung file
+                    await stream.WriteAsync(fileData, 0, fileData.Length);
+
+                    AddMessage("Bạn đã gửi file: " + fileName);
+                }
+                catch (Exception ex)
+                {
+                    AddMessage($"Lỗi khi gửi file: {ex.Message}");
                 }
             }
-            catch
-            {
-                Close();
-            }
         }
 
-        // Kiểm tra nếu dữ liệu nhận là tên tệp
-        bool IsFileName(string message)
-        {
-            // Giả định rằng nếu message chứa '.' thì đó là tên tệp
-            return message.Contains(".");
-        }
-
-        // Nhận tệp
-        void ReceiveFile(string fileName)
-        {
-            byte[] fileData = new byte[1024 * 5000]; // Kích thước tối đa tệp
-            int receivedBytes = client.Receive(fileData);
-            byte[] actualFileData = new byte[receivedBytes];
-
-            Array.Copy(fileData, actualFileData, receivedBytes);
-            File.WriteAllBytes($"received_{fileName}", actualFileData); // Lưu tệp vào đĩa
-
-            AddMessage($"Đã nhận tệp: {fileName}");
-        }
-
-        // Phân mảnh gói tin thành byte để gửi đi
-        byte[] Serialize(object obj)
-        {
-            return JsonSerializer.SerializeToUtf8Bytes(obj);
-        }
-
-        // Gom mảnh lại
-        object Deserialize(byte[] data)
-        {
-            var jsonString = Encoding.UTF8.GetString(data);
-            return JsonSerializer.Deserialize<object>(jsonString);
-        }
-
-        // Đóng form ngắt kết nối
         private void Client_FormClosed(object sender, FormClosedEventArgs e)
         {
-            if (client != null)
-                client.Close(); 
-
-            Application.Exit();  
+            stream?.Close();
+            client?.Close();
         }
-
     }
 }
