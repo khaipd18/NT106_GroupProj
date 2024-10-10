@@ -21,27 +21,29 @@ namespace PrivateChatAndFilesharing
         public Client()
         {
             InitializeComponent();
-
             CheckForIllegalCrossThreadCalls = false;
-
             Connect();
         }
 
         private void Client_Load(object sender, EventArgs e)
         {
-
         }
 
         private void btnSend_Click(object sender, EventArgs e)
         {
-            Send();
+            SendMessage();
             AddMessage(txbMessage.Text);
+        }
+
+        private void btnSendFile_Click(object sender, EventArgs e)
+        {
+            SendFile();
         }
 
         IPEndPoint IP;
         Socket client;
 
-        // Khoi tao ket noi
+        // Khởi tạo kết nối
         void Connect()
         {
             IP = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9999);
@@ -53,38 +55,57 @@ namespace PrivateChatAndFilesharing
             }
             catch
             {
-                MessageBox.Show("Khong the ket noi den Server", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Không thể kết nối đến Server", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
 
             Thread listen = new Thread(Receive);
             listen.IsBackground = true;
             listen.Start();
-
-
         }
-        // Dong ket noi
+
+        // Đóng kết nối
         void Close()
         {
             client.Close();
         }
 
-        // Gui tin di
-        void Send()
+        // Gửi tin đi
+        void SendMessage()
         {
             if (txbMessage.Text != string.Empty)
                 client.Send(Serialize(txbMessage.Text));
         }
 
-        // Them message vao khung chat
+        // Gửi tệp
+        void SendFile()
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = ofd.FileName;
+                    byte[] fileData = File.ReadAllBytes(filePath);
+                    string fileName = Path.GetFileName(filePath);
+
+                    // Gửi tên tệp trước
+                    client.Send(Serialize(fileName));
+
+                    // Gửi dữ liệu tệp
+                    client.Send(fileData);
+                    AddMessage($"Đã gửi tệp: {fileName}");
+                }
+            }
+        }
+
+        // Thêm message vào khung chat
         void AddMessage(string s)
         {
             LsvMessage.Items.Add(new ListViewItem() { Text = s });
             txbMessage.Clear();
         }
 
-        // Nhan tin
+        // Nhận tin
         void Receive()
         {
             try
@@ -94,9 +115,16 @@ namespace PrivateChatAndFilesharing
                     byte[] data = new byte[1024 * 5000];
                     client.Receive(data);
 
+                    // Kiểm tra xem dữ liệu nhận có phải là tên tệp không
                     string message = (string)Deserialize(data);
-
-                    AddMessage(message);
+                    if (IsFileName(message))
+                    {
+                        ReceiveFile(message);
+                    }
+                    else
+                    {
+                        AddMessage(message);
+                    }
                 }
             }
             catch
@@ -105,23 +133,47 @@ namespace PrivateChatAndFilesharing
             }
         }
 
-        // Phan Manh goi tin thanh byte de gui di
+        // Kiểm tra nếu dữ liệu nhận là tên tệp
+        bool IsFileName(string message)
+        {
+            // Giả định rằng nếu message chứa '.' thì đó là tên tệp
+            return message.Contains(".");
+        }
+
+        // Nhận tệp
+        void ReceiveFile(string fileName)
+        {
+            byte[] fileData = new byte[1024 * 5000]; // Kích thước tối đa tệp
+            int receivedBytes = client.Receive(fileData);
+            byte[] actualFileData = new byte[receivedBytes];
+
+            Array.Copy(fileData, actualFileData, receivedBytes);
+            File.WriteAllBytes($"received_{fileName}", actualFileData); // Lưu tệp vào đĩa
+
+            AddMessage($"Đã nhận tệp: {fileName}");
+        }
+
+        // Phân mảnh gói tin thành byte để gửi đi
         byte[] Serialize(object obj)
         {
             return JsonSerializer.SerializeToUtf8Bytes(obj);
         }
 
-        //Gom manh lai
+        // Gom mảnh lại
         object Deserialize(byte[] data)
         {
             var jsonString = Encoding.UTF8.GetString(data);
             return JsonSerializer.Deserialize<object>(jsonString);
         }
 
-        // Dong form ngat ket noi
+        // Đóng form ngắt kết nối
         private void Client_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Close();
+            if (client != null)
+                client.Close(); 
+
+            Application.Exit();  
         }
+
     }
 }
