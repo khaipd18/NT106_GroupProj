@@ -1,3 +1,4 @@
+using Private_Chat___Filesharing;
 using System;
 using System.Threading;
 using System.Windows.Forms;
@@ -12,20 +13,20 @@ namespace PrivateChatAndFilesharing
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // Chạy form Server trên một thread riêng
+
             Thread serverThread = new Thread(() =>
             {
                 Application.Run(new Server()); // Chạy form Server
-            })
-            {
-                IsBackground = true // Đảm bảo khi form chính tắt, thread này sẽ tắt
-            };
-            serverThread.Start(); // Khởi chạy form Server
+            });
+
+            serverThread.IsBackground = true; // Đảm bảo khi form chính tắt, thread này sẽ tắt
+            serverThread.Start(); // Khởi chạy form Server trên thread riêng
 
             // Chạy form Client trên thread chính
             Application.Run(new Client());
 
-            // Khi form Client đóng, sẽ không dừng server thread
+            // Khi form Client đóng, kết thúc ứng dụng
+            serverThread.Join(); // Đảm bảo Server thread cũng hoàn tất trước khi thoát
         }
     }
 }

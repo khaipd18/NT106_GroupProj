@@ -1,9 +1,16 @@
-﻿namespace PrivateChatAndFilesharing
+﻿namespace Private_Chat___Filesharing
 {
     partial class Server
     {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -13,79 +20,66 @@
             base.Dispose(disposing);
         }
 
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
         private void InitializeComponent()
         {
-            this.LsvMessage = new System.Windows.Forms.ListView();
-            this.txbMessage = new System.Windows.Forms.TextBox();
-            this.btnSend = new System.Windows.Forms.Button();
-            this.btnShareFile = new System.Windows.Forms.Button();
-            this.messageColumn = new System.Windows.Forms.ColumnHeader(); // Thêm cột hiển thị nội dung tin nhắn
+            this.LsvMessages = new System.Windows.Forms.ListView();
+            this.columnHeaderMessages = new System.Windows.Forms.ColumnHeader();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // LsvMessage
+            // LsvMessages
             // 
-            this.LsvMessage.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-                this.messageColumn});
-            this.LsvMessage.FullRowSelect = true;
-            this.LsvMessage.GridLines = true;
-            this.LsvMessage.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.LsvMessage.Location = new System.Drawing.Point(12, 12);
-            this.LsvMessage.Name = "LsvMessage";
-            this.LsvMessage.Size = new System.Drawing.Size(776, 372);
-            this.LsvMessage.TabIndex = 0;
-            this.LsvMessage.UseCompatibleStateImageBehavior = false;
-            this.LsvMessage.View = System.Windows.Forms.View.Details; // Đặt chế độ xem là 'Details'
-            this.messageColumn.Text = "Nội dung tin nhắn"; // Đặt tiêu đề cho cột
-            this.messageColumn.Width = 750; // Điều chỉnh độ rộng cột
+            this.LsvMessages.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeaderMessages});
+            this.LsvMessages.FullRowSelect = true;
+            this.LsvMessages.GridLines = true;
+            this.LsvMessages.HideSelection = false;
+            this.LsvMessages.Location = new System.Drawing.Point(12, 40);
+            this.LsvMessages.Name = "LsvMessages";
+            this.LsvMessages.Size = new System.Drawing.Size(776, 370);
+            this.LsvMessages.TabIndex = 0;
+            this.LsvMessages.UseCompatibleStateImageBehavior = false;
+            this.LsvMessages.View = System.Windows.Forms.View.Details;
             // 
-            // txbMessage
+            // columnHeaderMessages
             // 
-            this.txbMessage.Location = new System.Drawing.Point(12, 390);
-            this.txbMessage.Name = "txbMessage";
-            this.txbMessage.Size = new System.Drawing.Size(676, 22);
-            this.txbMessage.TabIndex = 1;
+            this.columnHeaderMessages.Text = "Messages";
+            this.columnHeaderMessages.Width = 740;
             // 
-            // btnSend
+            // label1
             // 
-            this.btnSend.Location = new System.Drawing.Point(694, 390);
-            this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(94, 29);
-            this.btnSend.TabIndex = 2;
-            this.btnSend.Text = "Gửi"; // Đổi văn bản sang tiếng Việt
-            this.btnSend.UseVisualStyleBackColor = true;
-            this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
-            // 
-            // btnShareFile
-            // 
-            this.btnShareFile.Location = new System.Drawing.Point(694, 425);
-            this.btnShareFile.Name = "btnShareFile";
-            this.btnShareFile.Size = new System.Drawing.Size(94, 29);
-            this.btnShareFile.TabIndex = 3;
-            this.btnShareFile.Text = "Chia sẻ file"; // Đổi văn bản sang tiếng Việt
-            this.btnShareFile.UseVisualStyleBackColor = true;
-            this.btnShareFile.Click += new System.EventHandler(this.btnShareFile_Click);
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(145, 20);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Server Messages";
             // 
             // Server
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 466);
-            this.Controls.Add(this.btnShareFile);
-            this.Controls.Add(this.btnSend);
-            this.Controls.Add(this.txbMessage);
-            this.Controls.Add(this.LsvMessage);
+            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.LsvMessages);
             this.Name = "Server";
-            this.Text = "Máy Chủ"; // Đổi văn bản sang tiếng Việt
+            this.Text = "Server";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Server_FormClosed);
-            this.Load += new System.EventHandler(this.Server_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
 
-        private System.Windows.Forms.ListView LsvMessage;
-        private System.Windows.Forms.TextBox txbMessage;
-        private System.Windows.Forms.Button btnSend;
-        private System.Windows.Forms.Button btnShareFile;
-        private System.Windows.Forms.ColumnHeader messageColumn; // Khai báo cột tin nhắn
+        #endregion
+
+        private System.Windows.Forms.ListView LsvMessages;
+        private System.Windows.Forms.ColumnHeader columnHeaderMessages;
+        private System.Windows.Forms.Label label1;
     }
 }
