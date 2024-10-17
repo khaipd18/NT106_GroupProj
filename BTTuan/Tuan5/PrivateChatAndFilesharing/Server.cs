@@ -33,20 +33,23 @@ namespace PrivateChatAndFilesharing
             AddMessage("Máy chủ đã khởi động...");
         }
 
+        private List<TcpClient> clients = new List<TcpClient>();
+
         private void ListenForClients()
         {
             while (true)
             {
-                client = server.AcceptTcpClient();
-                stream = client.GetStream();
+                TcpClient newClient = server.AcceptTcpClient();
+                clients.Add(newClient);
                 AddMessage("Máy khách đã kết nối...");
-                Thread clientThread = new Thread(HandleClient);
+                Thread clientThread = new Thread(() => HandleClient(newClient));
                 clientThread.Start();
             }
         }
 
-        private void HandleClient()
+        private void HandleClient(TcpClient client)
         {
+            NetworkStream stream = client.GetStream();
             byte[] buffer = new byte[1024];
             int bytesRead;
 
@@ -54,45 +57,40 @@ namespace PrivateChatAndFilesharing
             {
                 string message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                 AddMessage("Máy khách: " + message);
+
+                // Gửi tin nhắn đến tất cả các client khác
+                BroadcastMessage("Máy khách: " + message, client);
             }
 
-            // Xử lý nhận file
-            while (true)
+            // Xóa client khi ngắt kết nối
+            clients.Remove(client);
+            stream.Close();
+            client.Close();
+        }
+
+
+        private void BroadcastMessage(string message, TcpClient senderClient)
+        {
+            byte[] messageData = Encoding.UTF8.GetBytes(message);
+            foreach (var client in clients)
             {
-                try
+                // Không gửi lại cho client đã gửi tin nhắn
+                if (client != senderClient)
                 {
-                    byte[] fileNameLengthBytes = new byte[4];
-                    if (stream.Read(fileNameLengthBytes, 0, 4) == 0) break;
-
-                    int fileNameLength = BitConverter.ToInt32(fileNameLengthBytes, 0);
-                    byte[] fileNameBytes = new byte[fileNameLength];
-                    stream.Read(fileNameBytes, 0, fileNameLength);
-
-                    string fileName = Encoding.UTF8.GetString(fileNameBytes);
-                    AddMessage("Máy khách gửi file: " + fileName);
-
-                    // Đọc nội dung file
-                    using (MemoryStream memoryStream = new MemoryStream())
+                    try
                     {
-                        byte[] fileBuffer = new byte[1024];
-                        int bytesReceived;
-
-                        while ((bytesReceived = stream.Read(fileBuffer, 0, fileBuffer.Length)) > 0)
-                        {
-                            memoryStream.Write(fileBuffer, 0, bytesReceived);
-                        }
-
-                        string fileContent = Encoding.UTF8.GetString(memoryStream.ToArray());
-                        AddMessage($"Nội dung:\n{fileContent}"); // Xuống dòng cho nội dung
+                        NetworkStream clientStream = client.GetStream();
+                        clientStream.Write(messageData, 0, messageData.Length);
                     }
-                }
-                catch (Exception ex)
-                {
-                    AddMessage($"Lỗi: {ex.Message}");
-                    break; // Thoát vòng lặp khi có lỗi
+                    catch
+                    {
+                        // Xử lý lỗi nếu cần, ví dụ: loại bỏ client không còn hoạt động khỏi danh sách
+                    }
                 }
             }
         }
+
+
 
         private void AddMessage(string message)
         {
